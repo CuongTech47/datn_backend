@@ -1,23 +1,29 @@
-'use strict'
+"use strict";
 
-const AccessService = require("../services/access.service")
+const { CREATED, SuccessResponse } = require("../core/success.response");
+const AccessService = require("../services/access.service");
 
 class AccessController {
+  signUp = async (req, res, next) => {
+    /* 
+    201 CREATED
+     */
+
+    new CREATED({
+        message : 'Registed OK!',
+        metadata : await AccessService.signUp(req.body)
+    }).send(res)
    
-    signUp = async (req , res , next) => {
-        try {
-            console.log(`[P]::signUp::`, req.body)
+  }
 
-
-            /* 
-                200 OK
-                201 CREATED
-            */
-            return res.status(201).json(await AccessService.signUp(req.body) )
-        } catch (error) {
-           next(error) 
-        }
-    }
+  login = async ( req , res , next) => {
+     /* 
+    200 OK
+     */
+    new SuccessResponse({
+        metadata : await AccessService.login(req.body)
+    }).send(res)
+  }
 }
 
-module.exports = new AccessController()
+module.exports = new AccessController();
