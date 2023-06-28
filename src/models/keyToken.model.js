@@ -1,7 +1,7 @@
 'use strict'
 
 //!dmbg
-const { Schema , model } = require('mongoose'); // Erase if already required
+const { Schema , model , Types } = require('mongoose'); // Erase if already required
 
 const DOCUMENT_NAME = 'Key'
 const COLLECTION_NAME = 'Keys'
