@@ -91,8 +91,24 @@ class ProductController {
 
   getListSearchProduct = async (req , res , next) => {
     new SuccessResponse({
-      message : ' unPublishProductByShop  success',
+      message : 'getListSearchProduct  success',
       metadata : await ProductServiceV2.getListSearchProduct(req.params)
+    }).send(res)
+  }
+
+  findAllProducts = async (req , res , next) => {
+    new SuccessResponse({
+      message : 'get list findAllProducts success',
+      metadata : await ProductServiceV2.findAllProducts(req.query)
+    }).send(res)
+  }
+
+  findProduct = async (req , res , next) => {
+    new SuccessResponse({
+      message : 'get findProduct success',
+      metadata : await ProductServiceV2.findProduct({
+        product_id : req.params.product_id
+      })
     }).send(res)
   }
 
@@ -101,7 +117,19 @@ class ProductController {
 
   // end query
 
+  // update product 
 
+  updateProduct = async ( req , res ,next) => {
+    new SuccessResponse({
+      message : 'update Product success',
+      metadata : await ProductServiceV2.updateProduct(
+        req.body.product_type,
+        req.params.productId,{
+        ...req.body,
+        product_shop : req.user.userId
+      })
+    }).send(res)
+  }
   
 
  

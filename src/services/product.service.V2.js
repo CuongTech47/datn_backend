@@ -1,12 +1,15 @@
 'user strict'
 
 
+
 const { BadRequestError } = require('../core/error.response')
 const { product , clothing ,electronic , furniture } = require('../models/product.model')
+const { insertInventory } = require('../models/repositories/inventory.repository')
 
 
 // repository
-const { findAllDraftsForShop , publishProductByShop ,findAllPublishForShop , unPublishProductByShop , searchProductByUser } = require('../models/repositories/product.repository')
+const { findAllDraftsForShop , publishProductByShop ,findAllPublishForShop , unPublishProductByShop , searchProductByUser , findAllProducts , findProduct, updateProductById } = require('../models/repositories/product.repository')
+const { removeUndefineObj, updateNestedObjParser } = require('../utils')
 
 
 // define Factory class to create product 
@@ -32,14 +35,7 @@ class ProductFactory {
 
         return new productClass(payload).createProduct()
 
-        // switch(type) {
-        //     case 'Electronics':
-        //         return new Electronics(payload).createProduct()
-        //     case 'Clothing':
-        //         return new  Clothing(payload).createProduct()
-        //     default :
-        //         throw new BadRequestError(`Invalid Product Types ${type}`)
-        // }
+      
 
     }
 
@@ -61,7 +57,7 @@ class ProductFactory {
         const query = { product_shop , isPublished : true}
         return await findAllPublishForShop({ query , limit , skip })
     }
-    //end query
+   
 
     static async unPublishProductByShop ({product_shop, product_id}) {
         return await unPublishProductByShop({product_shop , product_id})
@@ -70,6 +66,34 @@ class ProductFactory {
 
     static async getListSearchProduct ({keySearch}) {
         return await searchProductByUser({ keySearch })
+    }
+
+
+    static async findAllProducts ({limit = 50 , sort = 'ctime' ,page = 1 , filter = {isPublished: true}}) {
+        return await findAllProducts({ limit , sort , filter , page ,
+            select : ['product_name' , 'product_price' , 'product_thumb']
+        })
+    }
+
+    static async findProduct ({product_id}) {
+        return await findProduct({ product_id , unSelect : ['__v' , 'product_variations'] })
+    }
+
+     //end query
+
+
+
+
+    // update product 
+    static async updateProduct(type , productId , payload) {
+
+        const productClass = ProductFactory.productRegistry[type]
+
+        if(!productClass) throw new BadRequestError(`Invalid Product Types ${type}`)
+
+        return new productClass(payload).updateProduct(productId)
+
+    
     }
 
 }
@@ -94,7 +118,22 @@ class Product {
 
     // create new Product
     async createProduct( product_id ) {
-        return await product.create({...this, _id : product_id })
+        const newProduct = await product.create({...this, _id : product_id })
+        if(newProduct) {
+            //add product_stock in inventory collection
+            await insertInventory({
+                productId : newProduct._id,
+                shopId : this.product_shop,
+                stock : this.product_quantity
+            })
+        }
+
+        return newProduct
+    }
+
+    // update Product 
+    async updateProduct(productId , bodyUpdate) {
+        return await updateProductById({productId , bodyUpdate , model : product})
     }
 }
 
@@ -114,6 +153,21 @@ class Clothing extends Product {
 
 
         return newProduct
+    }
+
+    async updateProduct( productId ) {
+        const objParams = removeUndefineObj(this)
+
+        if(objParams.product_attributes) {
+            // console.log(objParams.product_attributes)
+            // update chill
+            await updateProductById({productId ,
+                 bodyUpdate : updateNestedObjParser(objParams.product_attributes),
+                 model : clothing
+            })
+        }
+        const updateProduct = await super.updateProduct(productId,updateNestedObjParser(objParams))
+        return updateProduct
     }
 }
 
