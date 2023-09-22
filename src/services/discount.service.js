@@ -19,13 +19,13 @@ const { convertToObjIdMongodb } = require("../utils");
  *
  */
 
-class Discount {
+class DiscountService {
   static async createDiscountCode(payload) {
     const {
       code,
       start_date,
       end_date,
-      isActive,
+      is_active,
       shopId,
       min_order_value,
       product_ids,
@@ -42,9 +42,9 @@ class Discount {
     } = payload;
 
     // kiem tra
-    if (new Date() < new Date(start_date) || new Date() > new Date(end_date)) {
-      throw new BadRequestError("Discount code has expried!");
-    }
+    // if (new Date() < new Date(start_date) || new Date() > new Date(end_date)) {
+    //   throw new BadRequestError("Discount code has expried!");
+    // }
 
     if (new Date(start_date) >= new Date(end_date)) {
       throw new BadRequestError("Start Date must be before end_date");
@@ -78,7 +78,7 @@ class Discount {
       discount_users_used: users_used,
       discount_shopId: shopId,
       discount_max_uses_per_user: max_uses_per_user,
-      discount_isActive: isActive,
+      discount_is_active: is_active,
       discount_applies_to: applies_to,
       discount_product_ids: applies_to === "all" ? [] : product_ids,
     });
@@ -86,7 +86,7 @@ class Discount {
     return newDiscount;
   }
 
-  static async getAllDiscountCodesWithProduct({ code, shopId, userId, limit }) {
+  static async getAllDiscountCodesWithProduct({ code, shopId, userId, limit , page }) {
     const existDiscount = await discount
       .findOne({
         discount_code: code,
@@ -133,13 +133,15 @@ class Discount {
 
 
   static async getAllDiscountCodesByShop(limit , page ,shopId ,) {
+    // console.log('ccc')
+    // console.log(convertToObjIdMongodb(shopId))
     const discounts = await findAllDiscountCodesUnSelect({
         // limit : +limit,
         limit : +limit,
         page : +page,
         filter : {
             discount_shopId : convertToObjIdMongodb(shopId),
-            discount_isActive : true
+            discount_is_active : true
         },
         
         unSelect : ['__v','discount_shopId'],
@@ -155,7 +157,7 @@ class Discount {
     const existsDiscount = await checkDiscountExists({
         model : discount,
         filter : {
-            discount_code: code,
+            discount_code: codeId,
             discount_shopId : convertToObjIdMongodb(shopId)
         }
     })
@@ -164,9 +166,9 @@ class Discount {
         throw new NotFoundError('discount doesn`t exists')
     }
 
-    const {discount_isActive , discount_max_uses } = existsDiscount
+    const {discount_is_active , discount_max_uses ,discount_min_order_value, discount_start_date , discount_end_date } = existsDiscount
 
-    if(!discount_isActive) throw new NotFoundError(`discount expried!`)
+    if(!discount_is_active) throw new NotFoundError(`discount expried!`)
     if(!discount_max_uses) throw new NotFoundError(`discount are out`)
 
     if(new Date() < new Date(discount_start_date) || new Date() > new Date(discount_end_date)) {
@@ -217,3 +219,5 @@ class Discount {
 
 
 }
+
+module.exports = DiscountService

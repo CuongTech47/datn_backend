@@ -70,7 +70,7 @@ const discountSchema = new Schema(
         type: Schema.Types.ObjectId ,
         ref : 'Shop'
       }, //
-      discount_isActive : {
+      discount_is_active : {
         type: Boolean ,
         default : true
       }, //

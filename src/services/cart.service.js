@@ -4,14 +4,13 @@ const { getProductById } = require('../models/repositories/product.repository')
 const { NotFoundError} = require('../core/error.response')
 class CartService {
   static async createUserCart({ userId, product }) {
-    const query = { cart_userId: userId, cart_state: "active" };
+    const query = { cart_userId: userId, cart_state: "active" },
 
-    (updateOrInsert = {
+    updateOrInsert = {
       $addToSet: {
         cart_products: product,
       },
-    }),
-      (options = { upsert: true, new: true });
+    },options = { upsert: true, new: true };
     return await cart.findOneAndUpdate(query, updateOrInsert, options);
   }
 
@@ -26,8 +25,7 @@ class CartService {
         $inc: {
           "cart_products.$.quantity": quantity,
         },
-        options: { upsert: true, new: true },
-      };
+      },options = { upsert: true, new: true }
     return await cart.findOneAndUpdate(query, updateSet, options);
   }
 
@@ -45,7 +43,7 @@ class CartService {
   }
 
   // update cart
-  static async addToCartv2 ({ userId , product}) {
+  static async addToCartv2 ({ userId , shop_order_ids}) {
     const {productId , quantity , old_quantity } = shop_order_ids[0]?.item_products[0]
     // check product 
 

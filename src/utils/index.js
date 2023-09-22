@@ -26,7 +26,7 @@ const removeUndefineObj = obj => {
     return obj
 }
 
-const convertToObjIdMongodb = id => Types.ObjectId(id) 
+const convertToObjIdMongodb = id => new Types.ObjectId(id) 
 
 const updateNestedObjParser = obj => {
     console.log(`[1]::`,obj)
