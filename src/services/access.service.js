@@ -8,6 +8,7 @@ const { createTokenPair, verifyJWT } = require('../auth/authUtils');
 const { getInfoData } = require('../utils');
 const { BadRequestError, AuthFailureError, ForbiddenError } = require('../core/error.response');
 const { findByEmail } = require('./shop.service');
+const { resolve } = require('path');
 
 
 const RoleShop = {
@@ -146,7 +147,8 @@ class AccessService {
     if(!foundShop) throw new BadRequestError('Shop not resgisted!')
 
     // 2
-    const match = bcrypt.compare(password , foundShop.password)
+    const match = await bcrypt.compare(password , foundShop.password)
+    console.log('mat khau',match)
     if(!match) throw new AuthFailureError('Authentication errors')
 
     //3
@@ -166,6 +168,7 @@ class AccessService {
       refreshToken : tokens.refreshToken,
       privateKey , publicKey
     })
+    await new Promise(resolve => setTimeout(resolve , 2000))
     return {
       shop : getInfoData({fileds : ['_id','name','email'],obj:foundShop}),
       tokens

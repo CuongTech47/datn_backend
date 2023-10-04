@@ -59,6 +59,8 @@ class DiscountService {
       })
       .lean();
 
+      
+
     if (existDiscount && existDiscount.discount_isActive) {
       throw new BadRequestError("Discount exists!");
     }
@@ -94,7 +96,7 @@ class DiscountService {
       })
       .lean();
 
-      if(!existDiscount || !existDiscount.discount_isActive) {
+      if(!existDiscount || !existDiscount.discount_is_active) {
         throw new NotFoundError('Discount is not exists!')
       } 
 
@@ -132,9 +134,8 @@ class DiscountService {
 
 
 
-  static async getAllDiscountCodesByShop(limit , page ,shopId ,) {
-    // console.log('ccc')
-    // console.log(convertToObjIdMongodb(shopId))
+  static async getAllDiscountCodesByShop({limit , page ,shopId }) {
+   
     const discounts = await findAllDiscountCodesUnSelect({
         // limit : +limit,
         limit : +limit,
@@ -162,18 +163,20 @@ class DiscountService {
         }
     })
 
+
+   
     if(!existsDiscount) {
         throw new NotFoundError('discount doesn`t exists')
     }
 
-    const {discount_is_active , discount_max_uses ,discount_min_order_value, discount_start_date , discount_end_date } = existsDiscount
+    const {discount_is_active , discount_max_uses ,discount_min_order_value, discount_start_date , discount_end_date , discount_type , discount_value , discount_max_uses_per_user  , discount_users_used} = existsDiscount
 
     if(!discount_is_active) throw new NotFoundError(`discount expried!`)
     if(!discount_max_uses) throw new NotFoundError(`discount are out`)
 
-    if(new Date() < new Date(discount_start_date) || new Date() > new Date(discount_end_date)) {
-        throw new NotFoundError('Discount ecode has expried!')
-    }
+    // if(new Date() < new Date(discount_start_date) || new Date() > new Date(discount_end_date)) {
+    //     throw new NotFoundError('Discount ecode has expried!')
+    // }
 
     // check xem co ton tai gia tri toi thieu hay khong
     let totalOrder = 0
@@ -181,6 +184,7 @@ class DiscountService {
         totalOrder = products.reduce((acc , product)=>{
           return acc + ( product.quantity * product.price)
         },0)
+
         if(totalOrder < discount_min_order_value) {
           throw new NotFoundError(`Discount requires a minium order value of ${discount_min_order_value}!`)
         }
