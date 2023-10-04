@@ -74,6 +74,9 @@ const searchProductByUser = async ({ keySearch }) => {
 const findAllProducts = async ({ limit, sort, page, filter, select }) => {
   const skip = (page - 1) * limit;
   const sortBy = sort === "ctime" ? { _id: -1 } : { _id: 1 };
+
+   // Lấy tổng số sản phẩm dựa trên điều kiện filter
+   const totalCount = await product.countDocuments(filter);
   const products = await product
     .find(filter)
     .sort(sortBy)
@@ -82,7 +85,10 @@ const findAllProducts = async ({ limit, sort, page, filter, select }) => {
     .select(getSelectData(select))
     .lean();
 
-  return products;
+  return {
+    products,
+    totalCount
+  };
 };
 
 const findProduct = async ({ product_id, unSelect }) => {
@@ -118,7 +124,7 @@ const getProductById = async (productId) => {
 };
 
 const checkProductByServer = async (products) => {
-  return await Promise.all(product.map(async product => {
+  return await Promise.all(products.map(async product => {
     const foundProduct = await getProductById(product.productId)
     if(foundProduct) {
       return {
