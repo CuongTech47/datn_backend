@@ -76,7 +76,7 @@ const findAllProducts = async ({ limit, sort, page, filter, select }) => {
   const sortBy = sort === "ctime" ? { _id: -1 } : { _id: 1 };
 
    // Lấy tổng số sản phẩm dựa trên điều kiện filter
-   const totalCount = await product.countDocuments(filter);
+  //  const totalProducts = await product.countDocuments(filter);
   const products = await product
     .find(filter)
     .sort(sortBy)
@@ -87,7 +87,7 @@ const findAllProducts = async ({ limit, sort, page, filter, select }) => {
 
   return {
     products,
-    totalCount
+    // totalProducts
   };
 };
 
