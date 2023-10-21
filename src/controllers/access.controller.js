@@ -1,23 +1,61 @@
-'use strict'
+"use strict";
 
-const AccessService = require("../services/access.service")
+const { CREATED, SuccessResponse } = require("../core/success.response");
+const AccessService = require("../services/access.service");
 
 class AccessController {
+  handleRefreshToken = async (req , res , next) => {
+    // new SuccessResponse ({
+    //   message : 'Get token success',
+    //   metadata : await AccessService.handleRefreshToken(req.body.refreshToken)
+    // }).send(res)
+
+
+    // auth v2 
+
+    new SuccessResponse ({
+      message : 'Get token success',
+      metadata : await AccessService.handleRefreshTokenV2({
+        refreshToken : req.refreshToken,
+        user : req.user,
+        keyStore: req.keyStore
+      })
+    }).send(res)
+
+
+  }
+
+
+  logout = async ( req , res , next) => {
+    /* 
+   200 OK
+    */
+   new SuccessResponse({
+       message : 'Logout Success!',
+       metadata : await AccessService.logout(req.keyStore)
+   }).send(res)
+ }
+  signUp = async (req, res, next) => {
+    /* 
+    201 CREATED
+     */
+
+    new CREATED({
+        message : 'Registed OK!',
+        metadata : await AccessService.signUp(req.body)
+    }).send(res)
    
-    signUp = async (req , res , next) => {
-        try {
-            console.log(`[P]::signUp::`, req.body)
+  }
 
+  login = async ( req , res , next) => {
+     /* 
+    200 OK
+     */
+    new SuccessResponse({
+        metadata : await AccessService.login(req.body)
+    }).send(res)
+  }
 
-            /* 
-                200 OK
-                201 CREATED
-            */
-            return res.status(201).json(await AccessService.signUp(req.body) )
-        } catch (error) {
-           next(error) 
-        }
-    }
 }
 
-module.exports = new AccessController()
+module.exports = new AccessController();

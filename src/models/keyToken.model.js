@@ -1,7 +1,7 @@
 'use strict'
 
 //!dmbg
-const { Schema , model } = require('mongoose'); // Erase if already required
+const { Schema , model , Types } = require('mongoose'); // Erase if already required
 
 const DOCUMENT_NAME = 'Key'
 const COLLECTION_NAME = 'Keys'
@@ -11,22 +11,24 @@ const COLLECTION_NAME = 'Keys'
 const keyTokenSchema = new Schema({
     user:{
         type : Schema.Types.ObjectId,
+        require : true,
         ref : 'Shop'
     },
-    email:{
-        type:String,
-        required:true,
-        trim : true,
-        unique:true,
-    },
-
     publicKey : {
         type:String,
         required:true,
     },
-    refreshToken : {
+    privateKey : {
+        type:String,
+        required:true,
+    },
+    refreshTokensUsed : {
         type : Array,
-        default : []
+        default : [] // nhung rf da dc su dung
+    },
+    refreshToken : {
+        type : String, // nhung rf dang dc su dung
+        required : true
     }
 },{
   collection : COLLECTION_NAME ,
