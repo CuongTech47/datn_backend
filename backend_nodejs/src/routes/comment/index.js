@@ -15,6 +15,7 @@ router.use(authenticationV2)
 
 
 router.post('',asyncHandler(commentController.createComment))
+router.delete('',asyncHandler(commentController.deleteComment))
 router.get('',asyncHandler(commentController.getCommentsByParentId))
 
 
