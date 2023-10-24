@@ -1,7 +1,7 @@
 const amqp = require('amqplib')
 
 
-const messages = 'Hello , RabbitMQ for cuong dep trai 19'
+const messages = 'Hello , RabbitMQ for cuong dep trai 20'
 
 const runProducer = async () => {
     try {

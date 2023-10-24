@@ -16,4 +16,3 @@ describe('MongoDB Connection', () => {
         expect(mongoose.connection.readyState).toBe(1);
     });
 });
-//

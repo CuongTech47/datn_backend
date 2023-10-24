@@ -1,11 +1,18 @@
-'use strict'
+const amqp = require('amqplib');
 
-const { connectToRabbitMQ, connectToRabbitMQForTest } = require('../dbs/init_rabbit')
+describe('RabbitMQ Connection', () => {
+    let connection;
 
+    beforeAll(async () => {
+        connection = await amqp.connect('amqps://ejrnxxms:zmqTOa2T_rKdlWRnNfzp7RcGUkTDMR7L@octopus.rmq3.cloudamqp.com/ejrnxxms');
+    });
 
-describe('RabbitMQ Connection', ()=>{
-    it('Should connect to successfull RabbitMQ', async () => {
-        const result = await connectToRabbitMQForTest()
-        expect(result).toBeUndefined()
-    })
-})
+    afterAll(async () => {
+        await connection.close();
+    });
+
+    it('should connect to RabbitMQ', async () => {
+        const channel = await connection.createChannel();
+        expect(channel).toBeDefined();
+    });
+});
