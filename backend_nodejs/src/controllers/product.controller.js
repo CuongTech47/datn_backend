@@ -62,7 +62,10 @@ class ProductController {
     new SuccessResponse({
       message : 'Get list PublishForShop success',
       metadata : await ProductServiceV2.findAllPublishForShop({
-        product_shop : req.user.userId
+        product_shop : req.user.userId,
+        limit : req.query.limit,
+        skip : req.query.skip
+
       })
     }).send(res)
   }

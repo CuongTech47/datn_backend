@@ -8,6 +8,11 @@ const app = express()
 
 
 
+// test pub sub redis service
+// require('./tests/inventory.test')
+// const productTest = require('./tests/product.test')
+
+// productTest.purchaseProduct('product0011' , 10)
 
 
 

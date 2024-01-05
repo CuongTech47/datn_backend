@@ -119,8 +119,8 @@ const queryProduct = async ({ query, limit, skip }) => {
 
 const getProductById = async (productId) => {
   return await product.findOne({
-    _id: convertToObjIdMongodb(productId.lean()),
-  });
+    _id: convertToObjIdMongodb(productId),
+  }).lean();
 };
 
 const checkProductByServer = async (products) => {

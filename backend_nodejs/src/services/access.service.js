@@ -168,7 +168,9 @@ class AccessService {
       refreshToken : tokens.refreshToken,
       privateKey , publicKey
     })
-    await new Promise(resolve => setTimeout(resolve , 2000))
+
+    // delay 2s cho client nhan duoc message thong bao
+    // await new Promise(resolve => setTimeout(resolve , 2000))
     return {
       shop : getInfoData({fileds : ['_id','name','email'],obj:foundShop}),
       tokens

@@ -1,6 +1,6 @@
 'use strict'
 
-const { consumerQueue } = require('./src/services/consumerQueue.services')
+const { consumerQueue } = require('./src/services/consumerQueue.service')
 
 const queueName = 'test-topic'
 

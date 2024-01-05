@@ -23,6 +23,39 @@ const uploadImageFromUrl = async (url) => {
 }
 
 
+// 2 upload image from local
+
+const uploadImageFromLocal = async ({
+    path,
+    folderName = 'product/1007',
+   
+
+}) => {
+    try {
+        const result = await cloudinary.uploader.upload(path, {
+            public_id:'thumb',
+            folder : folderName,
+
+        })
+
+        console.log(result);
+
+        return {
+            image_url: result.secure_url,
+            shopId: 1007,
+            thumb_url: await cloudinary.url(result.public_id,{
+                height:100,
+                width:100,
+                format:'jpg'
+            } )
+        }
+        
+    } catch (error) {
+        console.log('Error Upload image::',error);
+    }
+}
+
 module.exports = {
-    uploadImageFromUrl
+    uploadImageFromUrl,
+    uploadImageFromLocal
 }

@@ -11,7 +11,7 @@ async function consumerOrderedMessage() {
 
         // set prefect to 1 to ensure that only one message is sent to the consumer at a time
         // 1 nguoi dung chi nhan 1 message trong 1 thoi diem
-        channel.prefetch(1)
+        // channel.prefetch(1)
 
         channel.consume(queueName, message => {
             const msg = message.content.toString()
